@@ -32,9 +32,15 @@ Set `VITE_API_BASE_URL=http://localhost:8000` in a root `.env.local` when testin
 
 The frontend loads `/tonconnect-manifest.json` from its own origin. Before deploying, update the manifest's `url` to the actual HTTPS app domain and set `iconUrl` to a publicly accessible 180x180 PNG or ICO owned by GIFTORA. The current icon URL is a temporary placeholder. Wallets must be configured to the TON Testnet for the initial test phase; the UI labels the connected chain and warns when the wallet is not on Testnet. No transactions are sent by this prototype.
 
-## Backend deployment
+## Render deployment
 
-The root `render.yaml` describes a separate FastAPI web service. Before deploying, replace the example CORS origin with the actual frontend origin and add `TELEGRAM_BOT_TOKEN` as a secret environment variable in Render. The backend's `/health` route is used for health checks.
+The root `render.yaml` defines two services in the Frankfurt region:
+- `giftora`: static React frontend at `https://giftora.onrender.com`
+- `giftora-api`: FastAPI backend at `https://giftora-api.onrender.com`
+
+Open [the GIFTORA Render Blueprint](https://dashboard.render.com/blueprint/new?repo=https://github.com/mitsu198/giftora), review both services, and apply the Blueprint. During the first setup Render will request `TELEGRAM_BOT_TOKEN`; enter it directly in Render's secret field, never in GitHub or chat. The frontend API URL and backend CORS origin are preconfigured for these Render subdomains. The backend's `/health` route is used for health checks.
+
+The GitHub Actions workflow is configured to build the frontend and run backend unit tests. Confirm the checks pass before relying on automatic deploys (`checksPass`).
 
 ## Current scope and safety
 
