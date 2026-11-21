@@ -5,12 +5,12 @@ import TelegramBridge from './TelegramBridge'
 
 type GiftItem = { name: string; series: string; price: string; emoji: string; tone: string; tag?: string }
 const gifts: GiftItem[] = [
-  { name: 'Plush Pepe', series: 'Rare collectible', price: '฿ 245', emoji: '🐸', tone: 'mint', tag: 'HOT' },
-  { name: 'Durov’s Cap', series: 'Limited gift', price: '฿ 180', emoji: '🧢', tone: 'blue' },
-  { name: 'Precious Peach', series: 'Collectible gift', price: '฿ 320', emoji: '🍑', tone: 'peach', tag: 'RARE' },
-  { name: 'Vintage Cigar', series: 'Classic collection', price: '฿ 95', emoji: '🚬', tone: 'gold' },
-  { name: 'Eternal Rose', series: 'Collectible gift', price: '฿ 410', emoji: '🌹', tone: 'rose' },
-  { name: 'Toy Bear', series: 'Classic collection', price: '฿ 125', emoji: '🧸', tone: 'lavender' },
+  { name: 'Plush Pepe', series: 'Rare collectible', price: '245 TON*', emoji: '🐸', tone: 'mint', tag: 'HOT' },
+  { name: 'Durov’s Cap', series: 'Limited gift', price: '180 TON*', emoji: '🧢', tone: 'blue' },
+  { name: 'Precious Peach', series: 'Collectible gift', price: '320 TON*', emoji: '🍑', tone: 'peach', tag: 'RARE' },
+  { name: 'Vintage Cigar', series: 'Classic collection', price: '95 TON*', emoji: '🚬', tone: 'gold' },
+  { name: 'Eternal Rose', series: 'Collectible gift', price: '410 TON*', emoji: '🌹', tone: 'rose' },
+  { name: 'Toy Bear', series: 'Classic collection', price: '125 TON*', emoji: '🧸', tone: 'lavender' },
 ]
 const tabs = [{ label: 'Главная', icon: House }, { label: 'Каталог', icon: Compass }, { label: 'Избранное', icon: Heart }, { label: 'Профиль', icon: UserRound }]
 
@@ -18,7 +18,7 @@ export default function App() {
   const [active, setActive] = useState('Главная')
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('Все')
-  const [favorites, setFavorites] = useState<string[]>([])
+  const [favorites, setFavorites] = useState<string[]>(() => {\n    try { return JSON.parse(localStorage.getItem('giftora:favorites') || '[]') as string[] } catch { return [] }\n  })
   const shown = gifts.filter(g =>
     g.name.toLowerCase().includes(query.toLowerCase()) &&
     (filter === 'Все' || g.series.toLowerCase().includes(filter.toLowerCase())) &&
@@ -51,7 +51,7 @@ export default function App() {
     </section>
 
     <section className="catalog-section" hidden={active === "Профиль"}>
-      <div className="section-heading"><div><div className="eyebrow">CURATED FOR YOU</div><h2>{active === "Каталог" ? "Каталог подарков" : active === "Избранное" ? "Избранное" : "Популярные подарки"}</h2></div><button className="text-link" onClick={() => setActive('Каталог')}>Весь каталог <ChevronRight size={16}/></button></div>
+      <div className="section-heading"><div><div className="eyebrow">DEMO CATALOG · NOT LIVE LISTINGS</div><h2>{active === "Каталог" ? "Каталог подарков" : active === "Избранное" ? "Избранное" : "Популярные подарки"}</h2></div><button className="text-link" onClick={() => setActive('Каталог')}>Весь каталог <ChevronRight size={16}/></button></div>
       <div className="catalog-tools"><div className="search-box"><Search size={17}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Найти подарок..."/></div><div className="filters">{['Все','Rare','Classic'].map(f => <button key={f} className={filter === f ? 'filter active' : 'filter'} onClick={() => setFilter(f)}>{f}</button>)}</div></div>
       <div className="gift-grid">{shown.map((g) => <article className="gift-card glass-panel" key={g.name}><div className={'gift-visual '+g.tone}><div className="visual-shine"/><span className="gift-emoji">{g.emoji}</span>{g.tag && <span className="gift-tag">{g.tag}</span>}<button className={favorites.includes(g.name) ? "heart-button is-favorite" : "heart-button"} aria-label={favorites.includes(g.name) ? "Убрать из избранного" : "В избранное"} aria-pressed={favorites.includes(g.name)} onClick={() => toggleFavorite(g.name)}><Heart size={15} fill={favorites.includes(g.name) ? "currentColor" : "none"}/></button></div><div className="gift-info"><div><h3>{g.name}</h3><p>{g.series}</p></div><strong>{g.price}</strong></div></article>)}</div>
       {shown.length === 0 && <div className="empty-state">{active === "Избранное" && favorites.length === 0 ? "Пока нет избранных подарков. Добавь подарок нажатием на сердечко." : "Ничего не найдено. Попробуй другой запрос."}</div>}
