@@ -100,6 +100,5 @@ export default function App() {
    {history.length>0&&<div className="recent-wins"><h3>Последние открытия</h3>{history.map((h,i)=><p key={i}>{h}</p>)}</div>}
   </section>}
   <nav className="bottom-nav">{nav.map(({name,icon:Icon})=><button key={name} className={tab===name?'nav-item selected':'nav-item'} onClick={()=>{setSelected(null);setTab(name)}}><Icon size={19}/><span>{name}</span></button>)}</nav>
- </>:null}
  </main>
 }
