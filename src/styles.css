@@ -223,3 +223,15 @@ body{background:#191d31;min-width:320px}
 .free-card-label strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .free-card-label small{font-size:8px;color:#c6b9e5;white-space:nowrap}
 @media(max-width:700px){.rub-style .top-actions>.icon-button{display:none}}
+
+/* Hand-crafted gift illustrations */
+.gift-artwork{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 12px 14px #05081788)}
+.cover-main-art{position:relative;z-index:2;width:150px;height:150px;filter:drop-shadow(0 14px 15px #090b1b99);animation:gift-float 4.2s ease-in-out infinite}
+.catalog-case-emoji-art{position:relative;z-index:2;width:138px;height:138px;filter:drop-shadow(0 14px 16px #070a1b99);animation:gift-float 4.8s ease-in-out infinite}
+.opening-case-icon>.gift-artwork{width:64px;height:64px}
+.slot-item>.gift-artwork{width:76px;height:76px}
+.slot-item:nth-child(3)>.gift-artwork{width:104px;height:104px}
+.prize-artwork{align-self:center;width:105px;height:105px;margin:0 0 2px;filter:drop-shadow(0 10px 10px #070a1b99)}
+@keyframes gift-float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@media(max-width:700px){.cover-main-art{width:125px;height:125px}.catalog-case-emoji-art{width:120px;height:120px}.prize-artwork{width:88px;height:88px}}
+@media(max-width:390px){.cover-main-art{width:110px;height:110px}.catalog-case-emoji-art{width:105px;height:105px}.prize-artwork{width:78px;height:78px}}
