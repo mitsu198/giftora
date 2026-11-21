@@ -218,3 +218,8 @@ body{background:#191d31;min-width:320px}
  .prize-emoji{font-size:49px}
  .open-main-button,.battle-button{height:53px;font-size:12px}
 }
+
+.free-card-label{display:flex;flex-direction:column;gap:3px;min-width:0}
+.free-card-label strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.free-card-label small{font-size:8px;color:#c6b9e5;white-space:nowrap}
+@media(max-width:700px){.rub-style .top-actions>.icon-button{display:none}}
