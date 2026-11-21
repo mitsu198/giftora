@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { ArrowUpRight, Bell, ChevronRight, Compass, Gift, Gem, Heart, House, Search, Sparkles, Wallet, UserRound } from 'lucide-react'
+import { ArrowUpRight, Bell, ChevronRight, Compass, Gift, Gem, Heart, House, Search, Sparkles, UserRound } from 'lucide-react'
+import WalletConnect from './WalletConnect'
+import TelegramBridge from './TelegramBridge'
 
 type GiftItem = { name: string; series: string; price: string; emoji: string; tone: string; tag?: string }
 const gifts: GiftItem[] = [
@@ -21,7 +23,7 @@ export default function App() {
     <div className="ambient ambient-one" /><div className="ambient ambient-two" />
     <header className="topbar">
       <a className="brand" href="#"><span className="brand-mark"><Gift size={19}/></span><span>giftora<span className="brand-dot">.</span></span></a>
-      <div className="top-actions"><button className="icon-button" aria-label="Уведомления"><Bell size={18}/><i /></button><button className="wallet-button"><Wallet size={16}/> Подключить</button></div>
+      <div className="top-actions"><TelegramBridge /><button className="icon-button" aria-label="Уведомления"><Bell size={18}/><i /></button><WalletConnect /></div>
     </header>
 
     <section className="hero glass-panel">
