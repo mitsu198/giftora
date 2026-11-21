@@ -18,7 +18,9 @@ export default function App() {
   const [active, setActive] = useState('Главная')
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('Все')
-  const [favorites, setFavorites] = useState<string[]>(() => {\n    try { return JSON.parse(localStorage.getItem('giftora:favorites') || '[]') as string[] } catch { return [] }\n  })
+  const [favorites, setFavorites] = useState<string[]>(( ) => {
+    try { return JSON.parse(localStorage.getItem('giftora:favorites') || '[]') as string[] } catch { return [] }
+  })
   const shown = gifts.filter(g =>
     g.name.toLowerCase().includes(query.toLowerCase()) &&
     (filter === 'Все' || g.series.toLowerCase().includes(filter.toLowerCase())) &&
