@@ -9,6 +9,7 @@
 .wallet-connect{display:flex;align-items:center;gap:8px}
 .wallet-connect button{min-height:40px!important;border-radius:13px!important;font-family:Manrope,system-ui,sans-serif!important;font-size:11px!important}
 .telegram-status{font-size:7px;letter-spacing:1px;color:#bda2e8;border:1px solid #a77aff33;background:#a77aff12;border-radius:7px;padding:6px 8px;white-space:nowrap}
+.telegram-status.unverified{color:#d7c4ff;border-color:#b58aff33;background:#a77aff10}
 .telegram-status.error{color:#ffb0c1;border-color:#ff718733;background:#ff718711}
 .wallet-network{font-size:7px;letter-spacing:.8px;white-space:nowrap}
 .wallet-network.testnet{color:#9ee5c0}
