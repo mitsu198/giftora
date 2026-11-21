@@ -32,7 +32,7 @@ const cases: CaseItem[] = [
  {id:'legendary',name:'Легендарный',cost:1500,category:'Сопротивление',emoji:'💠',cover:'cover-premium',fresh:true,prizes:collectiblePool(rareCollectibles,1200,9000,100,'red')},
  {id:'collector',name:'Коллекционер',cost:3000,category:'Сопротивление',emoji:'🏆',cover:'cover-wanted',fresh:true,prizes:collectiblePool([...rareCollectibles,...midCollectibles],250,10000,100,'gold')},
 ]
-const nav = [{name:'Игры',icon:Home},{name:'Кейсы',icon:Gift},{name:'Заработок',icon:Zap},{name:'Бонусы',icon:Sparkles}]
+const nav = [{name:'Игры',icon:Home},{name:'Кейсы',icon:Gift},{name:'Инвентарь',icon:Gift},{name:'Апгрейд',icon:ArrowUpDown},{name:'Заработок',icon:Zap},{name:'Бонусы',icon:Sparkles}]
 const categories = ['Все','GTA VI','На сдачу','Сопротивление']
 const showcase = [
  prize('Plush Pepe','',5718,'red',0), prize('Durov’s Cap','',3630,'pink',0),
@@ -50,25 +50,33 @@ export default function App() {
  const [balance,setBalance]=useState(readBalance)
  const [freeDone,setFreeDone]=useState(()=>{try{return localStorage.getItem('giftora:free-date')===dateKey()}catch{return false}})
  const [rolling,setRolling]=useState(false)
- const [reward,setReward]=useState<Prize|null>(null)
+ const [rewards,setRewards]=useState<Prize[]>([])
+ const [inventory,setInventory]=useState<Prize[]>(()=>{try{return JSON.parse(localStorage.getItem('giftora:inventory')||'[]')}catch{return []}})
+ const [upgradeFrom,setUpgradeFrom]=useState<number|null>(null)
+ const [upgradeTo,setUpgradeTo]=useState('')
  const [multiplier,setMultiplier]=useState(1)
  const [history,setHistory]=useState<string[]>([])
  const [favorites,setFavorites]=useState<string[]>([])
  const visible=useMemo(()=>cases.filter(c=>!c.free&&(category==='Все'||c.category===category)&&c.name.toLowerCase().includes(search.toLowerCase())),[category,search])
- const begin=(c:CaseItem)=>{setSelected(c);setReward(null);setMultiplier(1)}
+ const begin=(c:CaseItem)=>{setSelected(c);setRewards([]);setMultiplier(c.free?1:1)}
+ const pickPrize=(pool:Prize[])=>{const total=pool.reduce((s,p)=>s+p.chance,0);let n=Math.random()*total;for(const p of pool){n-=p.chance;if(n<0)return p}return pool[pool.length-1]}
  const roll=()=>{
   if(!selected||rolling||(selected.free&&freeDone)||balance<selected.cost*multiplier)return
-  setRolling(true)
+  const count=selected.free?1:multiplier
+  setRolling(true);setRewards([])
   window.setTimeout(()=>{
-   const total=selected.prizes.reduce((s,p)=>s+p.chance,0);let n=Math.random()*total;let result=selected.prizes[selected.prizes.length-1]
-   for(const p of selected.prizes){n-=p.chance;if(n<0){result=p;break}}
-   const gain=selected.free?1:result.value
-   const next=balance-selected.cost*multiplier+gain
+   const results=Array.from({length:count},()=>pickPrize(selected.prizes))
+   const gain=selected.free?1:results.reduce((sum,p)=>sum+p.value,0)
+   const next=balance-selected.cost*count+gain
    setBalance(next);localStorage.setItem('giftora:demo-stars',String(next))
    if(selected.free){setFreeDone(true);localStorage.setItem('giftora:free-date',dateKey())}
-   setReward(result);setHistory(h=>[selected.name+' · '+result.name,...h].slice(0,6));setRolling(false)
-  },1550)
+   if(!selected.free){setInventory(old=>{const updated=[...old,...results];localStorage.setItem('giftora:inventory',JSON.stringify(updated));return updated})}
+   setRewards(results);setHistory(h=>[...results.map(p=>selected.name+' · '+p.name),...h].slice(0,12));setRolling(false)
+  },1900)
  }
+ const doUpgrade=()=>{if(upgradeFrom===null||!upgradeTo)return;const source=inventory[upgradeFrom];const target=allPrizes.find(p=>p.name===upgradeTo);if(!source||!target)return;const chance=Math.min(95,Math.max(1,Math.floor(source.value/target.value*80)));const success=Math.random()*100<chance;const updated=inventory.filter((_,i)=>i!==upgradeFrom);if(success)updated.push(target);setInventory(updated);localStorage.setItem('giftora:inventory',JSON.stringify(updated));setUpgradeFrom(null);setUpgradeTo('');setHistory(h=>[(success?'АПГРЕЙД УСПЕШЕН: ':'АПГРЕЙД НЕ УДАЛСЯ: ')+source.name+' → '+(success?target.name:'потеряно'),...h].slice(0,12))}
+ const allPrizes=useMemo(()=>{const map=new Map<string,Prize>();cases.flatMap(c=>c.prizes).forEach(p=>{if(!map.has(p.name))map.set(p.name,p)});return [...map.values()].sort((a,b)=>a.value-b.value)},[])
+ const back=()=>{if(rolling)return;setSelected(null);setRewards([])}
  const back=()=>{if(rolling)return;setSelected(null);setReward(null)}
  const favoriteToggle=(name:string)=>setFavorites(a=>a.includes(name)?a.filter(x=>x!==name):[...a,name])
  const featured=cases.find(c=>c.id==='vice')!
@@ -97,6 +105,8 @@ export default function App() {
     {visible.length===0&&<div className="empty-cases"><Search size={24}/><strong>Ничего не найдено</strong><span>Попробуй изменить запрос или категорию.</span></div>}
     <div className="collection-strip"><div className="collection-icon"><Trophy size={22}/></div><div><strong>Твоя коллекция начинается здесь</strong><span>Собирай подарки и следи за удачными открытиями.</span></div><ChevronRight size={18}/></div>
    </section>}
+   {tab==='Инвентарь'&&<section className="inventory-page"><div className="section-head"><div><span className="section-overline">ТВОИ НАХОДКИ</span><h2>Инвентарь</h2></div><span className="section-note">{inventory.length} предметов</span></div>{inventory.length===0?<div className="inventory-empty"><Gift size={36}/><strong>Пока пусто</strong><span>Открой кейс — подарки появятся здесь.</span><button onClick={()=>setTab('Кейсы')}>К кейсам</button></div>:<div className="inventory-grid">{inventory.map((p,i)=><button className={'inventory-card '+p.tone+(upgradeFrom===i?' chosen':'')} key={p.name+'-'+i} onClick={()=>{setUpgradeFrom(i);setTab('Апгрейд')}}><GiftArtwork variant={p.name}/><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b><small>Выбрать для апгрейда</small></button>)}</div>}</section>}
+   {tab==='Апгрейд'&&<section className="upgrade-page"><div className="section-head"><div><span className="section-overline">РИСКНИ И ПОЛУЧИ БОЛЬШЕ</span><h2>Апгрейд подарков</h2></div></div><p className="upgrade-description">Выбери подарок из инвентаря и цель дороже. При успехе подарок заменится на выбранный, при неудаче исходный предмет сгорит.</p><div className="upgrade-columns"><div className="upgrade-side"><strong>1. Твой предмет</strong>{inventory.length===0?<span className="upgrade-empty">Сначала открой кейс</span>:<div className="upgrade-choices">{inventory.map((p,i)=><button key={p.name+'-'+i} className={upgradeFrom===i?'chosen':''} onClick={()=>{setUpgradeFrom(i);setUpgradeTo('')}}><GiftArtwork variant={p.name}/><span>{p.name}</span><b>{p.value} ⭐</b></button>)}</div>}</div><div className="upgrade-side"><strong>2. Желаемый подарок</strong><select value={upgradeTo} onChange={e=>setUpgradeTo(e.target.value)} disabled={upgradeFrom===null}><option value="">Выбери цель дороже...</option>{allPrizes.filter(p=>upgradeFrom!==null&&p.value>inventory[upgradeFrom].value).map(p=><option key={p.name} value={p.name}>{p.name} — {p.value.toLocaleString('ru-RU')} ⭐</option>)}</select>{upgradeFrom!==null&&upgradeTo&&<div className="upgrade-target"><GiftArtwork variant={upgradeTo}/><b>{upgradeTo}</b><span>{allPrizes.find(p=>p.name===upgradeTo)?.value.toLocaleString('ru-RU')} ⭐</span></div>}</div></div>{upgradeFrom!==null&&upgradeTo&&<div className="upgrade-chance">Шанс успеха <strong>{Math.min(95,Math.max(1,Math.floor(inventory[upgradeFrom].value/(allPrizes.find(p=>p.name===upgradeTo)?.value||1)*80)))}%</strong><div><i style={{width:Math.min(95,Math.max(1,Math.floor(inventory[upgradeFrom].value/(allPrizes.find(p=>p.name===upgradeTo)?.value||1)*80)))+'%'}}/></div></div>}<button className="upgrade-action" disabled={upgradeFrom===null||!upgradeTo} onClick={doUpgrade}>ПРОКАЧАТЬ ПРЕДМЕТ <ArrowUpDown size={17}/></button></section>}
    {tab==='Заработок'&&<section className="placeholder-panel"><Zap size={35}/><h2>Заработок</h2><p>Раздел заданий и наград скоро появится.</p></section>}
    {tab==='Бонусы'&&<section className="placeholder-panel"><Sparkles size={35}/><h2>Бонусы GIFTORA</h2><p>Пополнение и бонусные акции будут подключены после настройки реальных платежей.</p></section>}
    {tab==='Игры'&&<section className="placeholder-panel"><Swords size={35}/><h2>Игры</h2><p>Мини-игры появятся в следующих обновлениях.</p></section>}
@@ -104,16 +114,16 @@ export default function App() {
    <button className="back-to-cases" onClick={back}><ArrowLeft size={19}/> Назад к кейсам</button>
    <div className="opening-panel">
     <div className="opening-title"><div className={'opening-case-icon '+selected.cover}><GiftArtwork variant={selected.prizes[0]?.name || selected.id}/></div><div><span className="section-overline">ОТКРЫТИЕ КЕЙСА</span><h1>{selected.name}</h1></div><span className="opening-cost">⭐ {selected.cost}</span></div>
-    <div className="slot-stage"><div className="slot-arrow arrow-up">▼</div><div className={rolling?'slot-track is-rolling':'slot-track'}>{[...selected.prizes.slice(1),...selected.prizes,...selected.prizes].map((p,i)=><div className={'slot-item '+p.tone} key={p.name+i}><GiftArtwork variant={p.name}/></div>)}</div><div className="slot-arrow arrow-down">▲</div></div>
-    {reward&&<div className="win-banner"><GiftArtwork variant={reward.name} className="win-gift-art"/><div><small>ТВОЙ РЕЗУЛЬТАТ</small><strong>{selected.free?'1 звезда':reward.name}</strong></div><b>+{selected.free?1:reward.value} ⭐</b></div>}
-    <div className="open-controls"><button className="open-main-button" disabled={rolling||(selected.free&&freeDone)||balance<selected.cost*multiplier} onClick={roll}>{rolling?'Открываем...':selected.free&&freeDone?'Уже получено':reward?'Открыть ещё раз':'Открыть за '+(selected.cost*multiplier)+' ⭐'}</button><button className="battle-button" onClick={()=>setTab('Игры')}><Swords size={22}/> В батл</button></div>
-    <div className="multiplier-row">{[1,2,3,4,5].map(n=><button key={n} className={multiplier===n?'multiplier active':'multiplier'} onClick={()=>setMultiplier(n)}>x{n}</button>)}<button className="round-tool"><Zap size={19}/></button><button className="round-tool"><ShieldCheck size={19}/></button><button className="round-tool"><Volume2 size={19}/></button></div>
+    <div className="multi-slot-stage">{Array.from({length:selected.free?1:multiplier},(_,lane)=><div className="slot-stage" key={lane}><span className="slot-lane-label">{selected.free?'БОНУС':`ПРОКРУТКА ${lane+1}`}</span><div className="slot-arrow arrow-up">▼</div><div className={rolling?'slot-track is-rolling':'slot-track'}>{[...selected.prizes.slice((lane+1)%Math.max(1,selected.prizes.length)),...selected.prizes,...selected.prizes].map((p,i)=><div className={'slot-item '+p.tone} key={p.name+i}><GiftArtwork variant={p.name}/></div>)}</div><div className="slot-arrow arrow-down">▲</div></div>)}</div>
+    {rewards.length>0&&<div className="multi-win-list">{rewards.map((r,i)=><div className="win-banner" key={r.name+i}><GiftArtwork variant={r.name} className="win-gift-art"/><div><small>{rewards.length>1?`ПРОКРУТКА ${i+1}`:'ТВОЙ РЕЗУЛЬТАТ'}</small><strong>{selected.free?'1 звезда':r.name}</strong></div><b>+{selected.free?1:r.value} ⭐</b></div>)}<div className="multi-total">Итого получено: <strong>+{rewards.reduce((s,p)=>s+(selected.free?1:p.value),0).toLocaleString('ru-RU')} ⭐</strong></div></div>}
+    <div className="open-controls"><button className="open-main-button" disabled={rolling||(selected.free&&freeDone)||balance<selected.cost*(selected.free?1:multiplier)} onClick={roll}>{rolling?'Крутим '+(selected.free?1:multiplier)+' рулетки...':selected.free&&freeDone?'Уже получено':rewards.length?'Открыть ещё раз':'Открыть '+(selected.free?'бесплатно':'x'+multiplier+' за '+(selected.cost*multiplier)+' ⭐')}</button><button className="battle-button" onClick={()=>setTab('Игры')}><Swords size={22}/> В батл</button></div>
+    <div className="multiplier-row">{[1,2,3,4,5].map(n=><button key={n} disabled={selected.free} className={multiplier===n?'multiplier active':'multiplier'} onClick={()=>setMultiplier(n)}>x{n}</button>)}<button className="round-tool"><Zap size={19}/></button><button className="round-tool"><ShieldCheck size={19}/></button><button className="round-tool"><Volume2 size={19}/></button></div>
    </div>
    <div className="prize-heading"><div><span className="section-overline">СОДЕРЖИМОЕ</span><h2>{selected.free?'Витрина подарков':'Что может выпасть'}</h2></div><span>{selected.free?'Декоративная витрина':selected.prizes.length+' предметов'}</span></div>
    <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><GiftArtwork variant={p.name} className="prize-artwork"/><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>{p.kind==='regular'?'Обычный подарок':'Коллекционный подарок'} · Шанс {p.chance.toFixed(2)}%</small>}</article>)}</div>
    <div className="test-disclaimer">В кейсах собраны обычные подарки Telegram и 123 коллекции collectible gifts. Сейчас это демонстрационные открытия: баланс хранится на этом устройстве, реальные платежи и выдача подарков пока не подключены.</div>
    {history.length>0&&<div className="recent-wins"><h3>Последние открытия</h3>{history.map((h,i)=><p key={i}>{h}</p>)}</div>}
   </section>}
-  <nav className="bottom-nav">{nav.map(({name,icon:Icon})=><button key={name} className={tab===name?'nav-item selected':'nav-item'} onClick={()=>{setSelected(null);setTab(name)}}><Icon size={19}/><span>{name}</span></button>)}</nav>
+  <nav className="bottom-nav">{nav.map(({name,icon:Icon})=><button key={name} className={tab===name?'nav-item selected':'nav-item'} onClick={()=>{setSelected(null);setRewards([]);setTab(name)}}><Icon size={19}/><span>{name}</span></button>)}</nav>
  </main>
 }
