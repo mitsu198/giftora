@@ -10,12 +10,14 @@ services:
     healthCheckPath: /health
     autoDeployTrigger: checksPass
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_INIT_DATA_MAX_AGE
         value: "86400"
       - key: CORS_ORIGINS
-        value: https://giftora.onrender.com,http://localhost:5173
+        value: https://giftora-1w15.onrender.com,http://localhost:5173
 
   - type: web
     name: giftora
@@ -25,4 +27,4 @@ services:
     autoDeployTrigger: checksPass
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://giftora-api.onrender.com
+        value: https://giftora-api-l0k8.onrender.com
