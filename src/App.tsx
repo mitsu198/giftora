@@ -18,7 +18,7 @@ export default function App() {
   const [active, setActive] = useState('Главная')
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('Все')
-  const [favorites, setFavorites] = useState<string[]>(( ) => {
+  const [favorites, setFavorites] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('giftora:favorites') || '[]') as string[] } catch { return [] }
   })
   const shown = gifts.filter(g =>
@@ -26,9 +26,11 @@ export default function App() {
     (filter === 'Все' || g.series.toLowerCase().includes(filter.toLowerCase())) &&
     (active !== 'Избранное' || favorites.includes(g.name))
   )
-  const toggleFavorite = (name: string) => setFavorites(current =>
-    current.includes(name) ? current.filter(item => item !== name) : [...current, name]
-  )
+  const toggleFavorite = (name: string) => setFavorites(current => {
+    const updated = current.includes(name) ? current.filter(item => item !== name) : [...current, name]
+    localStorage.setItem('giftora:favorites', JSON.stringify(updated))
+    return updated
+  })
   return <main className="app-shell">
     <div className="ambient ambient-one" /><div className="ambient ambient-two" />
     <header className="topbar">
