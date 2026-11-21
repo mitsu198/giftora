@@ -77,7 +77,6 @@ export default function App() {
  const doUpgrade=()=>{if(upgradeFrom===null||!upgradeTo)return;const source=inventory[upgradeFrom];const target=allPrizes.find(p=>p.name===upgradeTo);if(!source||!target)return;const chance=Math.min(95,Math.max(1,Math.floor(source.value/target.value*80)));const success=Math.random()*100<chance;const updated=inventory.filter((_,i)=>i!==upgradeFrom);if(success)updated.push(target);setInventory(updated);localStorage.setItem('giftora:inventory',JSON.stringify(updated));setUpgradeFrom(null);setUpgradeTo('');setHistory(h=>[(success?'АПГРЕЙД УСПЕШЕН: ':'АПГРЕЙД НЕ УДАЛСЯ: ')+source.name+' → '+(success?target.name:'потеряно'),...h].slice(0,12))}
  const allPrizes=useMemo(()=>{const map=new Map<string,Prize>();cases.flatMap(c=>c.prizes).forEach(p=>{if(!map.has(p.name))map.set(p.name,p)});return [...map.values()].sort((a,b)=>a.value-b.value)},[])
  const back=()=>{if(rolling)return;setSelected(null);setRewards([])}
- const back=()=>{if(rolling)return;setSelected(null);setReward(null)}
  const favoriteToggle=(name:string)=>setFavorites(a=>a.includes(name)?a.filter(x=>x!==name):[...a,name])
  const featured=cases.find(c=>c.id==='vice')!
  return <main className="app-shell rub-style">
