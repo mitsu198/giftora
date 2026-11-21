@@ -10,19 +10,19 @@ const prize = (name: string, emoji: string, value: number, tone: string, chance:
 const cases: CaseItem[] = [
  {id:'daily',name:'Подарок дня',cost:0,category:'Бесплатные',emoji:'🎁',cover:'cover-daily',free:true,prizes:[prize('1 звезда','⭐',1,'gold',100)]},
  {id:'surprise',name:'Сюрприз',cost:0,category:'Бесплатные',emoji:'🦩',cover:'cover-surprise',free:true,prizes:[prize('1 звезда','⭐',1,'gold',100)]},
- {id:'vice',name:'Вайс-Сити',cost:70,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[prize('Блеск','💍',140,'pink',35),prize('Шампанское','🍾',210,'gold',25),prize('Сёрф','🏄',350,'blue',20),prize('Роза','🌹',700,'rose',15),prize('Золотой подарок','🎁',1500,'gold',5)]},
- {id:'wanted',name:'Розыск',cost:175,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[prize('Кольцо','💍',350,'red',35),prize('Бомба-сюрприз','💣',525,'blue',25),prize('Маска','🐵',875,'pink',20),prize('Щит','🛡️',1750,'purple',15),prize('Редкий трофей','🏆',3500,'gold',5)]},
- {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[prize('1 звезда','⭐',1,'gold',55),prize('5 звёзд','⭐',5,'gold',30),prize('10 звёзд','🌟',10,'gold',12),prize('25 звёзд','✨',25,'purple',3)]},
- {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[prize('5 звёзд','⭐',5,'gold',45),prize('15 звёзд','🌟',15,'gold',30),prize('30 звёзд','✨',30,'purple',20),prize('100 звёзд','💎',100,'blue',5)]},
- {id:'resistance',name:'Сопротивление',cost:35,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[prize('15 звёзд','⭐',15,'gold',45),prize('35 звёзд','🌟',35,'gold',30),prize('70 звёзд','💎',70,'blue',20),prize('250 звёзд','👑',250,'gold',5)]},
- {id:'premium',name:'Премиум',cost:75,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[prize('30 звёзд','⭐',30,'gold',45),prize('75 звёзд','💎',75,'blue',30),prize('150 звёзд','💜',150,'purple',20),prize('500 звёзд','👑',500,'gold',5)]},
+ {id:'vice',name:'Вайс-Сити',cost:70,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[prize('Eternal Rose','',140,'pink',35),prize('Diamond Ring','',210,'gold',25),prize('Jelly Bunny','',350,'blue',20),prize('Plush Pepe','',700,'rose',15),prize('Durov’s Cap','',1500,'gold',5)]},
+ {id:'wanted',name:'Розыск',cost:175,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[prize('Durov’s Cap','',350,'red',35),prize('Plush Pepe','',525,'blue',25),prize('Precious Peach','',875,'pink',20),prize('Heart Locket','',1750,'purple',15),prize('Snoop Dogg','',3500,'gold',5)]},
+ {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[prize('Jelly Bunny','',1,'gold',55),prize('Santa Hat','',5,'gold',30),prize('Toy Bear','',10,'gold',12),prize('Eternal Rose','',25,'purple',3)]},
+ {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[prize('Diamond Ring','',5,'gold',45),prize('Precious Peach','',15,'gold',30),prize('Durov’s Cap','',30,'purple',20),prize('Plush Pepe','',100,'blue',5)]},
+ {id:'resistance',name:'Сопротивление',cost:35,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[prize('Heart Locket','',15,'gold',45),prize('Resistance Dog','',35,'gold',30),prize('Loot Bag','',70,'blue',20),prize('Plush Pepe','',250,'gold',5)]},
+ {id:'premium',name:'Премиум',cost:75,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[prize('Durov’s Cap','',30,'gold',45),prize('Snoop Dogg','',75,'blue',30),prize('Plush Pepe','',150,'purple',20),prize('Heart Locket','',500,'gold',5)]},
 ]
 const nav = [{name:'Игры',icon:Home},{name:'Кейсы',icon:Gift},{name:'Заработок',icon:Zap},{name:'Бонусы',icon:Sparkles}]
 const categories = ['Все','GTA VI','На сдачу','Сопротивление']
 const showcase = [
- prize('Gem Signet','💍',5718,'red',0), prize('Bling Binky','⚙️',3630,'pink',0),
- prize('Myth Mask','🐵',2847,'pink',0), prize('Trapped Heart','🕸️',1844,'purple',0),
- prize('Jolly Chimp','🐒',1556,'purple',0), prize('Surge Board','🏄',1047,'blue',0),
+ prize('Plush Pepe','',5718,'red',0), prize('Durov’s Cap','',3630,'pink',0),
+ prize('Jelly Bunny','',2847,'pink',0), prize('Heart Locket','',1844,'purple',0),
+ prize('Jolly Chimp','',1556,'purple',0), prize('Surge Board','',1047,'blue',0),
 ]
 const dateKey = () => new Date().toISOString().slice(0,10)
 const readBalance = () => { try { return Number(localStorage.getItem('giftora:demo-stars') ?? 25) } catch { return 25 } }
@@ -51,7 +51,7 @@ export default function App() {
    const next=balance-selected.cost*multiplier+gain
    setBalance(next);localStorage.setItem('giftora:demo-stars',String(next))
    if(selected.free){setFreeDone(true);localStorage.setItem('giftora:free-date',dateKey())}
-   setReward(result);setHistory(h=>[selected.name+' · '+result.emoji+' '+result.name,...h].slice(0,6));setRolling(false)
+   setReward(result);setHistory(h=>[selected.name+' · '+result.name,...h].slice(0,6));setRolling(false)
   },1550)
  }
  const back=()=>{if(rolling)return;setSelected(null);setReward(null)}
@@ -88,15 +88,15 @@ export default function App() {
   </>:<section className="opening-page">
    <button className="back-to-cases" onClick={back}><ArrowLeft size={19}/> Назад к кейсам</button>
    <div className="opening-panel">
-    <div className="opening-title"><div className={'opening-case-icon '+selected.cover}><GiftArtwork variant={selected.id}/></div><div><span className="section-overline">ОТКРЫТИЕ КЕЙСА</span><h1>{selected.name}</h1></div><span className="opening-cost">⭐ {selected.cost}</span></div>
-    <div className="slot-stage"><div className="slot-arrow arrow-up">▼</div><div className={rolling?'slot-track is-rolling':'slot-track'}>{[...selected.prizes.slice(1),...selected.prizes,...selected.prizes].map((p,i)=><div className={'slot-item '+p.tone} key={p.name+i}><GiftArtwork variant={p.emoji}/></div>)}</div><div className="slot-arrow arrow-down">▲</div></div>
-    {reward&&<div className="win-banner"><span>{reward.emoji}</span><div><small>ТВОЙ РЕЗУЛЬТАТ</small><strong>{selected.free?'1 звезда':reward.name}</strong></div><b>+{selected.free?1:reward.value} ⭐</b></div>}
+    <div className="opening-title"><div className={'opening-case-icon '+selected.cover}><GiftArtwork variant={selected.prizes[0]?.name || selected.id}/></div><div><span className="section-overline">ОТКРЫТИЕ КЕЙСА</span><h1>{selected.name}</h1></div><span className="opening-cost">⭐ {selected.cost}</span></div>
+    <div className="slot-stage"><div className="slot-arrow arrow-up">▼</div><div className={rolling?'slot-track is-rolling':'slot-track'}>{[...selected.prizes.slice(1),...selected.prizes,...selected.prizes].map((p,i)=><div className={'slot-item '+p.tone} key={p.name+i}><GiftArtwork variant={p.name}/></div>)}</div><div className="slot-arrow arrow-down">▲</div></div>
+    {reward&&<div className="win-banner"><GiftArtwork variant={reward.name} className="win-gift-art"/><div><small>ТВОЙ РЕЗУЛЬТАТ</small><strong>{selected.free?'1 звезда':reward.name}</strong></div><b>+{selected.free?1:reward.value} ⭐</b></div>}
     <div className="open-controls"><button className="open-main-button" disabled={rolling||(selected.free&&freeDone)||balance<selected.cost*multiplier} onClick={roll}>{rolling?'Открываем...':selected.free&&freeDone?'Уже получено':reward?'Открыть ещё раз':'Открыть за '+(selected.cost*multiplier)+' ⭐'}</button><button className="battle-button" onClick={()=>setTab('Игры')}><Swords size={22}/> В батл</button></div>
     <div className="multiplier-row">{[1,2,3,4,5].map(n=><button key={n} className={multiplier===n?'multiplier active':'multiplier'} onClick={()=>setMultiplier(n)}>x{n}</button>)}<button className="round-tool"><Zap size={19}/></button><button className="round-tool"><ShieldCheck size={19}/></button><button className="round-tool"><Volume2 size={19}/></button></div>
    </div>
    <div className="prize-heading"><div><span className="section-overline">СОДЕРЖИМОЕ</span><h2>{selected.free?'Витрина подарков':'Что может выпасть'}</h2></div><span>{selected.free?'Декоративная витрина':selected.prizes.length+' предметов'}</span></div>
-   <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><GiftArtwork variant={p.emoji} className="prize-artwork"/><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>Шанс {p.chance}%</small>}</article>)}</div>
-   <div className="test-disclaimer">Демонстрационный режим: баланс и открытия хранятся на этом устройстве. Реальные платежи и выдача подарков ещё не подключены.</div>
+   <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><GiftArtwork variant={p.name} className="prize-artwork"/><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>Шанс {p.chance}%</small>}</article>)}</div>
+   <div className="test-disclaimer">Изображения — оригинальные иллюстрации коллекций Telegram. Сами открытия пока демонстрационные: баланс и открытия хранятся на этом устройстве. Реальные платежи и выдача подарков ещё не подключены.</div>
    {history.length>0&&<div className="recent-wins"><h3>Последние открытия</h3>{history.map((h,i)=><p key={i}>{h}</p>)}</div>}
   </section>}
   <nav className="bottom-nav">{nav.map(({name,icon:Icon})=><button key={name} className={tab===name?'nav-item selected':'nav-item'} onClick={()=>{setSelected(null);setTab(name)}}><Icon size={19}/><span>{name}</span></button>)}</nav>
