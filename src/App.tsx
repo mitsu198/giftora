@@ -4,18 +4,33 @@ import WalletConnect from './WalletConnect'
 import TelegramBridge from './TelegramBridge'
 import GiftArtwork from './GiftArtwork'
 
-type Prize = { name: string; emoji: string; value: number; tone: string; chance: number }
+type Prize = { name: string; emoji: string; value: number; tone: string; chance: number; kind?: 'regular'|'collectible' }
 type CaseItem = { id: string; name: string; cost: number; category: string; emoji: string; cover: string; prizes: Prize[]; free?: boolean; fresh?: boolean }
 const prize = (name: string, emoji: string, value: number, tone: string, chance: number): Prize => ({name,emoji,value,tone,chance})
+const collectibleNames = ["Intelligence Cup","Algorithm Cup","Lucky Locket","Durov’s Glasses","Resistance Dog","Heart Locket","Heroic Helmet","Mighty Arms","Mirage Lamp","Nail Bracelet","Precious Peach","Perfume Bottle","Mini Oscar","Gem Signet","Bling Binky","Plush Pepe","Ion Gem","Genie Lamp","Ionic Dryer","Astral Shard","Bonded Ring","Artisan Brick","Durov’s Cap","Magic Potion","Love Candle","Surge Board","Khabib’s Papakha","Rare Bird","Fine Pen","Sharp Tongue","Valentine Box","Neko Helmet","Joyful Bundle","Electric Skull","Sleigh Bell","Snow Mitten","Westside Sign","Record Player","Eternal Rose","Cupid Charm","Pretty Posy","Sky Stiletto","Loot Bag","Holiday Drink","Snow Globe","Mad Pumpkin","Flying Broom","Low Rider","Love Potion","Lush Bouquet","Bunny Muffin","UFC Strike","Skull Flower","Hanging Star","Signet Ring","Kissed Frog","Mousse Cake","Crystal Ball","Diamond Ring","Bow Tie","Vintage Cigar","Jingle Bell","Berry Box","Top Hat","Hypno Lollipop","Star Notepad","Timeless Book","Trapped Heart","Money Pot","Restless Jar","Winter Wreath","Snake Box","Swiss Watch","Voodoo Doll","Tama Gadget","Happy Brownie","Pet Snake","Faith Amulet","Spiced Wine","Eternal Candle","Fresh Socks","Santa Hat","Big Year","Moon Pendant","Jester Hat","Spring Basket","Cookie Heart","Jelly Bunny","Scared Cat","Sakura Flower","Hex Pot","Input Key","Jolly Chimp","Whip Cupcake","Victory Medal","Mood Pack","Jacks-in-the-Box","Xmas Stocking","Pool Float","Stellar Rocket","Candy Cane","Light Sword","Evil Eye","Ginger Cookie","Snoop Cigar","Clover Pin","Lunar Snake","Swag Bag","Party Sparkler","B-Day Candle","Liberty Figure","Instant Ramen","Easter Egg","Spy Agaric","Toy Bear","Witch Hat","Homemade Cake","Desk Calendar","Ice Cream","Chill Flame","Vice Cream","Snoop Dogg","Lol Pop"]
+const rareCollectibles = collectibleNames.slice(0, 25)
+const midCollectibles = collectibleNames.slice(25, 65)
+const commonCollectibles = collectibleNames.slice(65)
+const regularGifts = [
+ ['Love Heart',15,'pink'],['Teddy Bear',15,'gold'],['Gift Box',25,'blue'],['Red Rose',25,'pink'],
+ ['Birthday Cake',50,'gold'],['Bouquet of Flowers',50,'pink'],['Rocket',50,'blue'],
+ ['Champagne Bottle',50,'purple'],['Trophy',100,'gold'],['Diamond Ring',100,'gold'],['Gem',100,'blue']
+] as const
+const regularPool = (chance:number):Prize[] => regularGifts.map(([name,value,tone])=>({...prize(name,'',value,tone,chance/regularGifts.length),kind:'regular' as const}))
+const collectiblePool = (names:string[], min:number, max:number, chance:number, tone:string):Prize[] =>
+ names.map((name,i)=>({...prize(name,'',Math.round(min+(max-min)*(1-i/Math.max(1,names.length-1))),tone,chance/names.length),kind:'collectible' as const}))
+const dailyPrize = prize('1 звезда','⭐',1,'gold',100)
 const cases: CaseItem[] = [
- {id:'daily',name:'Подарок дня',cost:0,category:'Бесплатные',emoji:'🎁',cover:'cover-daily',free:true,prizes:[prize('1 звезда','⭐',1,'gold',100)]},
- {id:'surprise',name:'Сюрприз',cost:0,category:'Бесплатные',emoji:'🦩',cover:'cover-surprise',free:true,prizes:[prize('1 звезда','⭐',1,'gold',100)]},
- {id:'vice',name:'Вайс-Сити',cost:70,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[prize('Eternal Rose','',140,'pink',35),prize('Diamond Ring','',210,'gold',25),prize('Jelly Bunny','',350,'blue',20),prize('Plush Pepe','',700,'rose',15),prize('Durov’s Cap','',1500,'gold',5)]},
- {id:'wanted',name:'Розыск',cost:175,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[prize('Durov’s Cap','',350,'red',35),prize('Plush Pepe','',525,'blue',25),prize('Precious Peach','',875,'pink',20),prize('Heart Locket','',1750,'purple',15),prize('Snoop Dogg','',3500,'gold',5)]},
- {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[prize('Jelly Bunny','',1,'gold',55),prize('Santa Hat','',5,'gold',30),prize('Toy Bear','',10,'gold',12),prize('Eternal Rose','',25,'purple',3)]},
- {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[prize('Diamond Ring','',5,'gold',45),prize('Precious Peach','',15,'gold',30),prize('Durov’s Cap','',30,'purple',20),prize('Plush Pepe','',100,'blue',5)]},
- {id:'resistance',name:'Сопротивление',cost:35,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[prize('Heart Locket','',15,'gold',45),prize('Resistance Dog','',35,'gold',30),prize('Loot Bag','',70,'blue',20),prize('Plush Pepe','',250,'gold',5)]},
- {id:'premium',name:'Премиум',cost:75,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[prize('Durov’s Cap','',30,'gold',45),prize('Snoop Dogg','',75,'blue',30),prize('Plush Pepe','',150,'purple',20),prize('Heart Locket','',500,'gold',5)]},
+ {id:'daily',name:'Подарок дня',cost:0,category:'Бесплатные',emoji:'🎁',cover:'cover-daily',free:true,prizes:[dailyPrize]},
+ {id:'surprise',name:'Сюрприз',cost:0,category:'Бесплатные',emoji:'🦩',cover:'cover-surprise',free:true,prizes:[dailyPrize]},
+ {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[...regularPool(78),...collectiblePool(commonCollectibles,6,35,22,'gold')]},
+ {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[...regularPool(55),...collectiblePool(commonCollectibles,8,45,35,'gold'),...collectiblePool(midCollectibles,35,110,10,'blue')]},
+ {id:'resistance',name:'Сопротивление',cost:55,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[...collectiblePool(commonCollectibles,15,55,25,'gold'),...collectiblePool(midCollectibles,45,180,65,'blue'),...collectiblePool(rareCollectibles.slice(10),180,650,10,'purple')]},
+ {id:'vice',name:'Вайс-Сити',cost:90,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[...collectiblePool(commonCollectibles,15,65,15,'gold'),...collectiblePool(midCollectibles,55,260,65,'blue'),...collectiblePool(rareCollectibles,250,1800,20,'purple')]},
+ {id:'wanted',name:'Розыск',cost:250,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[...collectiblePool(midCollectibles,80,400,35,'blue'),...collectiblePool(rareCollectibles,400,3200,65,'red')]},
+ {id:'premium',name:'Премиум',cost:600,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[...collectiblePool(midCollectibles,150,650,20,'blue'),...collectiblePool(rareCollectibles,800,7000,80,'purple')]},
+ {id:'legendary',name:'Легендарный',cost:1500,category:'Сопротивление',emoji:'💠',cover:'cover-premium',fresh:true,prizes:collectiblePool(rareCollectibles,1200,9000,100,'red')},
+ {id:'collector',name:'Коллекционер',cost:3000,category:'Сопротивление',emoji:'🏆',cover:'cover-wanted',fresh:true,prizes:collectiblePool(collectibleNames,250,10000,100,'gold')},
 ]
 const nav = [{name:'Игры',icon:Home},{name:'Кейсы',icon:Gift},{name:'Заработок',icon:Zap},{name:'Бонусы',icon:Sparkles}]
 const categories = ['Все','GTA VI','На сдачу','Сопротивление']
@@ -95,8 +110,8 @@ export default function App() {
     <div className="multiplier-row">{[1,2,3,4,5].map(n=><button key={n} className={multiplier===n?'multiplier active':'multiplier'} onClick={()=>setMultiplier(n)}>x{n}</button>)}<button className="round-tool"><Zap size={19}/></button><button className="round-tool"><ShieldCheck size={19}/></button><button className="round-tool"><Volume2 size={19}/></button></div>
    </div>
    <div className="prize-heading"><div><span className="section-overline">СОДЕРЖИМОЕ</span><h2>{selected.free?'Витрина подарков':'Что может выпасть'}</h2></div><span>{selected.free?'Декоративная витрина':selected.prizes.length+' предметов'}</span></div>
-   <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><GiftArtwork variant={p.name} className="prize-artwork"/><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>Шанс {p.chance}%</small>}</article>)}</div>
-   <div className="test-disclaimer">Изображения — оригинальные иллюстрации коллекций Telegram. Сами открытия пока демонстрационные: баланс и открытия хранятся на этом устройстве. Реальные платежи и выдача подарков ещё не подключены.</div>
+   <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><GiftArtwork variant={p.name} className="prize-artwork"/><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>{p.kind==='regular'?'Обычный подарок':'Коллекционный подарок'} · Шанс {p.chance.toFixed(2)}%</small>}</article>)}</div>
+   <div className="test-disclaimer">В кейсах собраны обычные подарки Telegram и 123 коллекции collectible gifts. Сейчас это демонстрационные открытия: баланс хранится на этом устройстве, реальные платежи и выдача подарков пока не подключены.</div>
    {history.length>0&&<div className="recent-wins"><h3>Последние открытия</h3>{history.map((h,i)=><p key={i}>{h}</p>)}</div>}
   </section>}
   <nav className="bottom-nav">{nav.map(({name,icon:Icon})=><button key={name} className={tab===name?'nav-item selected':'nav-item'} onClick={()=>{setSelected(null);setTab(name)}}><Icon size={19}/><span>{name}</span></button>)}</nav>
