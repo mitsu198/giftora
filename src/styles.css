@@ -82,3 +82,5 @@
  .case-grid{grid-template-columns:1fr;gap:11px}.case-card{min-height:200px}.case-art{width:34%;min-width:112px}.case-emoji{font-size:58px}.case-details{padding:12px}.case-title-row h3{font-size:13px}.case-details>p{margin:5px 0 8px}.case-preview{margin-bottom:8px}.case-open-button{min-height:35px}
  .cases-intro{font-size:10px}.case-modal{padding:20px 17px}
 }
+
+[hidden]{display:none!important}
