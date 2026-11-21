@@ -527,3 +527,53 @@ body{background:#080d1b;color:#f6f7ff;background-image:radial-gradient(ellipse a
  .rub-style .nav-item{padding:6px 2px;font-size:7px;min-width:0}
  .rub-style .nav-item svg{width:15px;height:15px}
 }
+
+
+/* Animated case roulette */
+.rub-style .slot-stage{isolation:isolate}
+.rub-style .slot-stage:before{content:"";position:absolute;z-index:4;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);background:linear-gradient(180deg,transparent,#ffe08a 18%,#fff2c8 50%,#ffe08a 82%,transparent);box-shadow:0 0 13px #ffc85f,0 0 28px #ffb84c88;pointer-events:none}
+.rub-style .slot-stage:after{content:"";position:absolute;z-index:3;inset:0;background:linear-gradient(90deg,#101a32 0%,transparent 18%,transparent 82%,#101a32 100%);pointer-events:none}
+.rub-style .slot-track.is-rolling{animation:giftora-roulette 1.9s cubic-bezier(.08,.72,.12,1) both;will-change:transform}
+.rub-style .multi-slot-stage .slot-stage:nth-child(2) .slot-track.is-rolling{animation-duration:2.05s}
+.rub-style .multi-slot-stage .slot-stage:nth-child(3) .slot-track.is-rolling{animation-duration:2.2s}
+.rub-style .multi-slot-stage .slot-stage:nth-child(4) .slot-track.is-rolling{animation-duration:2.35s}
+.rub-style .multi-slot-stage .slot-stage:nth-child(5) .slot-track.is-rolling{animation-duration:2.5s}
+@keyframes giftora-roulette{0%{transform:translateX(0)}12%{transform:translateX(-12%)}70%{transform:translateX(-78%)}86%{transform:translateX(-88%)}94%{transform:translateX(-84%)}100%{transform:translateX(-86%)}}
+.slot-spin-glow{height:0;opacity:0;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:9px;color:#ffd77c;font-size:8px;font-weight:900;letter-spacing:2px;transition:height .25s,opacity .25s}
+.slot-spin-glow.active{height:25px;opacity:1}
+.slot-spin-glow i{width:5px;height:5px;border-radius:50%;background:#ffca69;box-shadow:0 0 12px #ffca69;animation:giftora-pulse .45s ease-in-out infinite alternate}
+.slot-spin-glow b{font-size:13px;animation:giftora-spin .8s linear infinite}
+@keyframes giftora-pulse{to{opacity:.25;transform:scale(.6)}}
+@keyframes giftora-spin{to{transform:rotate(180deg)}}
+
+/* Animated gift upgrader */
+.upgrade-animation{min-height:0;height:0;opacity:0;overflow:hidden;display:flex;align-items:center;justify-content:space-around;gap:12px;margin:0;padding:0;border:1px solid transparent;border-radius:18px;background:radial-gradient(ellipse at center,#344b7a,#101b34 72%);transition:height .3s,opacity .3s,margin .3s,padding .3s}
+.upgrade-animation.active{height:190px;opacity:1;margin:15px 0 5px;padding:12px;border-color:#607eaf;box-shadow:inset 0 0 35px #829eff18,0 0 28px #6689ff20}
+.upgrade-anim-item{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;animation:giftora-float 1.2s ease-in-out infinite alternate}
+.upgrade-anim-item>.gift-artwork-wrap{width:86px;height:86px;filter:drop-shadow(0 0 15px #a9bfff66)}
+.upgrade-anim-item span{font-size:7px;font-weight:900;letter-spacing:1.1px;color:#b7c8eb}
+.upgrade-anim-core{position:relative;flex:0 0 82px;width:82px;height:82px;display:grid;place-items:center}
+.upgrade-anim-core i{position:absolute;inset:4px;border:2px dashed #ffcf70;border-radius:50%;box-shadow:0 0 22px #ffca6955;animation:giftora-spin 1.4s linear infinite}
+.upgrade-anim-core:before,.upgrade-anim-core:after{content:"";position:absolute;inset:-5px;border:1px solid #7c9cff77;border-radius:50%;animation:giftora-orbit 1.8s ease-in-out infinite}
+.upgrade-anim-core:after{inset:13px;border-color:#ffcf7077;animation-direction:reverse;animation-duration:1.2s}
+.upgrade-anim-core b{font-size:32px;color:#ffdb88;text-shadow:0 0 20px #ffca69;animation:giftora-pulse .35s ease-in-out infinite alternate}
+.upgrade-anim-core small{position:absolute;bottom:-16px;color:#ffda8a;font-size:7px;font-weight:900;letter-spacing:1px;white-space:nowrap}
+.upgrade-animation.active .upgrade-anim-item:first-child{animation:giftora-send 1.1s ease-in-out infinite alternate}
+.upgrade-animation.active .upgrade-anim-item:last-child{animation:giftora-receive 1.1s ease-in-out infinite alternate}
+.upgrade-result{margin:10px 0;padding:12px;border-radius:11px;text-align:center;font-size:10px;font-weight:900;letter-spacing:.5px}
+.upgrade-result.success{background:#1e604a;color:#9fffd3;border:1px solid #4bd7a0}
+.upgrade-result.fail{background:#612f48;color:#ffc0d1;border:1px solid #d76b91}
+@keyframes giftora-float{to{transform:translateY(-7px)}}
+@keyframes giftora-send{to{transform:translate(12px,-5px) scale(.88);filter:brightness(1.35)}}
+@keyframes giftora-receive{to{transform:translate(-12px,-5px) scale(1.08);filter:brightness(1.3)}}
+@keyframes giftora-orbit{to{transform:rotate(180deg) scale(1.08)}}
+@media(max-width:700px){
+ .upgrade-animation.active{height:155px;padding:8px;gap:5px}
+ .upgrade-anim-item>.gift-artwork-wrap{width:64px;height:64px}
+ .upgrade-anim-core{width:62px;height:62px;flex-basis:62px}
+ .upgrade-anim-core b{font-size:25px}
+ .slot-spin-glow.active{height:22px}
+}
+@media(prefers-reduced-motion:reduce){
+ .rub-style .slot-track.is-rolling,.slot-spin-glow b,.slot-spin-glow i,.upgrade-anim-core i,.upgrade-anim-core:before,.upgrade-anim-core:after,.upgrade-anim-core b,.upgrade-anim-item,.upgrade-animation.active .upgrade-anim-item:first-child,.upgrade-animation.active .upgrade-anim-item:last-child{animation:none!important}
+}
