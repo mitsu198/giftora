@@ -38,7 +38,7 @@ def validate_telegram_init_data(init_data: str, bot_token: str) -> dict:
     except (ValueError, KeyError):
         raise HTTPException(status_code=401, detail="Invalid Telegram initData")
 
-    if len(data) != len(pairs) - 1 or not hmac.compare_digest(received_hash, received_hash.lower()):
+    if len(data) != len(pairs) - 1 or len(received_hash) != 64 or any(char not in "0123456789abcdef" for char in received_hash):
         raise HTTPException(status_code=401, detail="Invalid Telegram initData")
 
     data_check_string = "\n".join(f"{key}={value}" for key, value in sorted(data.items()))
