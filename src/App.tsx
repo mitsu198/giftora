@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowRight, Bell, Check, ChevronRight, CircleHelp, Coins, Gift, Gem, Heart, House, Layers3, Search, Sparkles, UserRound, X } from 'lucide-react'
+import { ArrowRight, Bell, Check, ChevronRight, CircleHelp, Gift, Gem, Heart, House, Layers3, Search, Sparkles, UserRound, X } from 'lucide-react'
 import WalletConnect from './WalletConnect'
 import TelegramBridge from './TelegramBridge'
 
