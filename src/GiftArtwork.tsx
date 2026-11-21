@@ -13,7 +13,7 @@ const giftSlugs: Record<string,string> = {
  'love heart':'love_heart','teddy bear':'teddy_bear','gift box':'gift_box','red rose':'red_rose',
  'birthday cake':'birthday_cake','homemade cake':'homemade_cake','bouquet of flowers':'bouquet_of_flowers',
  'rocket':'rocket','champagne bottle':'champagne_bottle','trophy':'trophy','gem':'gem',
- 'durov’s figurine':'durovs_figurine','durov's figurine':'durovs_figurine','myth mask':'myth_mask','intelligence cup':'intelligence_cup','algorithm cup':'algorithm_cup','lucky locket':'lucky_locket',
+ 'durov’s figurine':'durovs_figurine',"durov's figurine":"durovs_figurine",'myth mask':'myth_mask','intelligence cup':'intelligence_cup','algorithm cup':'algorithm_cup','lucky locket':'lucky_locket',
  'durov’s glasses':'durovs_glasses','resistance dogs':'resistance_dog',
  'heart lockets':'heart_locket','heroic helmets':'heroic_helmet','mighty arms':'mighty_arm',
  'mirage lamps':'mirage_lamp','nail bracelets':'nail_bracelet','precious peaches':'precious_peach',
