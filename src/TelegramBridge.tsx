@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-type TelegramStatus = 'checking' | 'inside' | 'outside' | 'error'
+type TelegramStatus = 'checking' | 'inside' | 'unverified' | 'outside' | 'error'
 
 export default function TelegramBridge() {
   const [status, setStatus] = useState<TelegramStatus>('checking')
@@ -32,7 +32,7 @@ export default function TelegramBridge() {
     }
     const base = import.meta.env.VITE_API_BASE_URL
     if (!base) {
-      setStatus('inside')
+      setStatus('unverified')
       return
     }
     fetch(`${base.replace(/\/$/, '')}/api/auth/telegram`, {
@@ -47,6 +47,6 @@ export default function TelegramBridge() {
 
   if (status === 'checking') return null
   return <span className={`telegram-status ${status}`}>
-    {status === 'inside' ? 'TELEGRAM MINI APP' : status === 'outside' ? 'WEB PREVIEW' : 'TELEGRAM AUTH ERROR'}
+    {status === 'inside' ? 'TELEGRAM VERIFIED' : status === 'unverified' ? 'TELEGRAM · API NOT SET' : status === 'outside' ? 'WEB PREVIEW' : 'TELEGRAM AUTH ERROR'}
   </span>
 }
