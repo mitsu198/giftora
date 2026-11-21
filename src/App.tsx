@@ -79,7 +79,7 @@ export default function App() {
       <div className="section-heading"><div><div className="eyebrow">GIFTORA DROP ZONE</div><h2>Выбери свой кейс</h2></div><div className="case-balance">⭐ {balance}</div></div>
       <p className="cases-intro">Открывай кейсы, собирай звёзды и пробуй удачу. Бесплатный кейс доступен раз в день.</p>
       <div className="case-grid">{cases.map(item => <article className={'case-card glass-panel ' + item.accent} key={item.id}>
-        <div className="case-art"><div className="case-aura"/><span className="case-emoji">{item.icon}</span><div className="case-spark spark-a">✦</div><div className="case-spark spark-b">✧</div>{item.featured && <span className="case-ribbon">FREE DROP</span>}</div>
+        <div className={'case-art ' + item.accent}><div className="case-aura"/><span className="case-emoji">{item.icon}</span><div className="case-spark spark-a">✦</div><div className="case-spark spark-b">✧</div>{item.featured && <span className="case-ribbon">FREE DROP</span>}</div>
         <div className="case-details"><div className="case-title-row"><h3>{item.name}</h3>{item.cost === 0 ? <span className="free-pill">FREE</span> : <span className="case-cost">⭐ {item.cost}</span>}</div><p>{item.description}</p>
           <div className="case-preview">{gifts.slice(0, 4).map((g, i) => <span className={'preview-gift preview-' + i} key={g.name}>{g.emoji}</span>)}</div>
           <div className="case-prize-line"><span>{item.id === 'free' ? 'Гарантированная награда' : 'Награды и шансы'}</span><strong>{item.id === 'free' ? '1 ⭐' : item.prizes.map(p => p.label).join(' · ')}</strong></div>
