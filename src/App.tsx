@@ -1,118 +1,97 @@
 import { useMemo, useState } from 'react'
-import { ArrowRight, Bell, Check, ChevronRight, CircleHelp, Gift, Gem, Heart, House, Layers3, Search, Sparkles, UserRound, X } from 'lucide-react'
+import { ArrowLeft, ArrowUpDown, Bell, Check, ChevronRight, Gift, Heart, Home, Layers3, Search, ShieldCheck, Sparkles, Swords, UserRound, Volume2, X, Zap } from 'lucide-react'
 import WalletConnect from './WalletConnect'
 import TelegramBridge from './TelegramBridge'
 
-type GiftItem = { name: string; series: string; price: string; emoji: string; tone: string; tag?: string }
-type CaseItem = { id: string; name: string; description: string; cost: number; accent: string; icon: string; prizes: { label: string; weight: number }[]; featured?: boolean }
-const gifts: GiftItem[] = [
-  { name: 'Plush Pepe', series: 'Rare collectible', price: '245 TON*', emoji: '🐸', tone: 'mint', tag: 'HOT' },
-  { name: 'Durov’s Cap', series: 'Limited gift', price: '180 TON*', emoji: '🧢', tone: 'blue' },
-  { name: 'Precious Peach', series: 'Collectible gift', price: '320 TON*', emoji: '🍑', tone: 'peach', tag: 'RARE' },
-  { name: 'Vintage Cigar', series: 'Classic collection', price: '95 TON*', emoji: '🚬', tone: 'gold' },
-  { name: 'Eternal Rose', series: 'Collectible gift', price: '410 TON*', emoji: '🌹', tone: 'rose' },
-  { name: 'Toy Bear', series: 'Classic collection', price: '125 TON*', emoji: '🧸', tone: 'lavender' },
-]
+type Prize = { name: string; emoji: string; value: number; tone: string; chance: number }
+type CaseItem = { id: string; name: string; cost: number; category: string; emoji: string; cover: string; prizes: Prize[]; free?: boolean; fresh?: boolean }
+const prize = (name: string, emoji: string, value: number, tone: string, chance: number): Prize => ({name,emoji,value,tone,chance})
 const cases: CaseItem[] = [
-  { id: 'free', name: 'Первый подарок', description: 'Бесплатный старт каждый день', cost: 0, accent: 'case-free', icon: '🎁', featured: true, prizes: [{ label: '1 ⭐', weight: 100 }] },
-  { id: 'mini', name: 'Мини-кейс', description: 'Небольшой шанс на x2', cost: 5, accent: 'case-mint', icon: '🪄', prizes: [{ label: '1 ⭐', weight: 60 }, { label: '3 ⭐', weight: 25 }, { label: '5 ⭐', weight: 10 }, { label: '10 ⭐', weight: 5 }] },
-  { id: 'lilac', name: 'Лиловый', description: 'Больше звёзд — больше эмоций', cost: 10, accent: 'case-lilac', icon: '💜', prizes: [{ label: '3 ⭐', weight: 50 }, { label: '8 ⭐', weight: 30 }, { label: '15 ⭐', weight: 15 }, { label: '30 ⭐', weight: 5 }] },
-  { id: 'shine', name: 'Сияние', description: 'Кейс для смелых коллекционеров', cost: 20, accent: 'case-pink', icon: '✨', prizes: [{ label: '10 ⭐', weight: 50 }, { label: '20 ⭐', weight: 30 }, { label: '40 ⭐', weight: 15 }, { label: '100 ⭐', weight: 5 }] },
-  { id: 'royal', name: 'Королевский', description: 'Самые крупные множители', cost: 35, accent: 'case-gold', icon: '👑', prizes: [{ label: '15 ⭐', weight: 55 }, { label: '35 ⭐', weight: 25 }, { label: '70 ⭐', weight: 15 }, { label: '200 ⭐', weight: 5 }] },
+ {id:'daily',name:'Подарок дня',cost:0,category:'Бесплатные',emoji:'🎁',cover:'cover-daily',free:true,prizes:[prize('1 звезда','⭐',1,'gold',100)]},
+ {id:'surprise',name:'Сюрприз',cost:0,category:'Бесплатные',emoji:'🦩',cover:'cover-surprise',free:true,prizes:[prize('1 звезда','⭐',1,'gold',100)]},
+ {id:'vice',name:'Вайс-Сити',cost:70,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[prize('Блеск','💍',140,'pink',35),prize('Шампанское','🍾',210,'gold',25),prize('Сёрф','🏄',350,'blue',20),prize('Роза','🌹',700,'rose',15),prize('Золотой подарок','🎁',1500,'gold',5)]},
+ {id:'wanted',name:'Розыск',cost:175,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[prize('Кольцо','💍',350,'red',35),prize('Бомба-сюрприз','💣',525,'blue',25),prize('Маска','🐵',875,'pink',20),prize('Щит','🛡️',1750,'purple',15),prize('Редкий трофей','🏆',3500,'gold',5)]},
+ {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[prize('1 звезда','⭐',1,'gold',55),prize('5 звёзд','⭐',5,'gold',30),prize('10 звёзд','🌟',10,'gold',12),prize('25 звёзд','✨',25,'purple',3)]},
+ {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[prize('5 звёзд','⭐',5,'gold',45),prize('15 звёзд','🌟',15,'gold',30),prize('30 звёзд','✨',30,'purple',20),prize('100 звёзд','💎',100,'blue',5)]},
+ {id:'resistance',name:'Сопротивление',cost:35,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[prize('15 звёзд','⭐',15,'gold',45),prize('35 звёзд','🌟',35,'gold',30),prize('70 звёзд','💎',70,'blue',20),prize('250 звёзд','👑',250,'gold',5)]},
+ {id:'premium',name:'Премиум',cost:75,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[prize('30 звёзд','⭐',30,'gold',45),prize('75 звёзд','💎',75,'blue',30),prize('150 звёзд','💜',150,'purple',20),prize('500 звёзд','👑',500,'gold',5)]},
 ]
-const tabs = [{ label: 'Главная', icon: House }, { label: 'Кейсы', icon: Gift }, { label: 'Каталог', icon: Layers3 }, { label: 'Профиль', icon: UserRound }]
-const todayKey = () => new Date().toISOString().slice(0, 10)
-const loadBalance = () => { try { return Number(localStorage.getItem('giftora:demo-stars') ?? 25) } catch { return 25 } }
-
+const nav = [{name:'Игры',icon:Home},{name:'Кейсы',icon:Gift},{name:'Заработок',icon:Zap},{name:'Бонусы',icon:Sparkles}]
+const categories = ['Все','GTA VI','На сдачу','Сопротивление']
+const showcase = [
+ prize('Gem Signet · Sentry Turret','💍',5718,'red',0),
+ prize('Bling Binky · Bullet','⚙️',3630,'pink',0),
+ prize('Myth Mask · Monkey Heist','🐵',2847,'pink',0),
+ prize('Trapped Heart · Crime Scene','🕸️',1844,'purple',0),
+ prize('Jolly Chimp · Bank Robber','🐒',1556,'purple',0),
+ prize('Surge Board · Golden Siren','🏄',1047,'blue',0),
+]
+const dateKey = () => new Date().toISOString().slice(0,10)
+const readBalance = () => { try { return Number(localStorage.getItem('giftora:demo-stars') ?? 25) } catch { return 25 } }
 export default function App() {
-  const [active, setActive] = useState('Главная')
-  const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState('Все')
-  const [favorites, setFavorites] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('giftora:favorites') || '[]') as string[] } catch { return [] } })
-  const [balance, setBalance] = useState(loadBalance)
-  const [openedCase, setOpenedCase] = useState<CaseItem | null>(null)
-  const [opening, setOpening] = useState(false)
-  const [lastReward, setLastReward] = useState<string | null>(null)
-  const [freeOpened, setFreeOpened] = useState(() => { try { return localStorage.getItem('giftora:free-date') === todayKey() } catch { return false } })
-  const [history, setHistory] = useState<string[]>([])
-  const shown = useMemo(() => gifts.filter(g => g.name.toLowerCase().includes(query.toLowerCase()) && (filter === 'Все' || g.series.toLowerCase().includes(filter.toLowerCase()))), [query, filter])
-  const toggleFavorite = (name: string) => setFavorites(current => { const updated = current.includes(name) ? current.filter(item => item !== name) : [...current, name]; localStorage.setItem('giftora:favorites', JSON.stringify(updated)); return updated })
-  const openCase = (item: CaseItem) => { setOpenedCase(item); setLastReward(null) }
-  const spinCase = () => {
-    if (!openedCase || opening || (openedCase.id === 'free' && freeOpened) || balance < openedCase.cost) return
-    setOpening(true)
-    window.setTimeout(() => {
-      const roll = Math.random() * 100
-      let cursor = 0
-      const reward = openedCase.prizes.find(p => { cursor += p.weight; return roll < cursor }) ?? openedCase.prizes[openedCase.prizes.length - 1]
-      const amount = Number(reward.label.replace(/[^0-9]/g, ''))
-      const nextBalance = balance - openedCase.cost + amount
-      setBalance(nextBalance); localStorage.setItem('giftora:demo-stars', String(nextBalance))
-      if (openedCase.id === 'free') { setFreeOpened(true); localStorage.setItem('giftora:free-date', todayKey()) }
-      setLastReward(reward.label); setHistory(current => [openedCase.name + ' · ' + reward.label, ...current].slice(0, 5)); setOpening(false)
-    }, 1350)
-  }
-  return <main className="app-shell">
-    <div className="ambient ambient-one" /><div className="ambient ambient-two" />
-    <header className="topbar">
-      <a className="brand" href="#"><span className="brand-mark"><Gift size={19}/></span><span>giftora<span className="brand-dot">.</span></span></a>
-      <div className="top-actions"><TelegramBridge /><div className="stars-balance"><span>⭐</span><strong>{balance}</strong></div><button className="icon-button" aria-label="Уведомления"><Bell size={18}/><i /></button><WalletConnect /></div>
-    </header>
-
-    <section className="hero glass-panel" hidden={active !== 'Главная'}>
-      <div className="hero-copy"><div className="eyebrow"><Sparkles size={13}/> DIGITAL GIFTS UNIVERSE</div>
-        <h1>Открывай.<br/><span>Собирай эмоции.</span><br/><em>Лови редкое.</em></h1>
-        <p>Мир цифровых подарков, ярких кейсов и уникальных коллекций в одном месте.</p>
-        <button className="primary-button" onClick={() => setActive('Кейсы')}>Открыть кейсы <ArrowRight size={17}/></button>
-      </div>
-      <div className="hero-art"><div className="orbit orbit-a"/><div className="orbit orbit-b"/><div className="hero-glow"/><div className="hero-gift">🎁</div><div className="float-chip chip-top"><Sparkles size={13}/> special drops</div><div className="float-chip chip-bottom">✦ коллекционируй редкое</div></div>
-      <div className="hero-index">01 <span/> 03</div>
-    </section>
-
-    <section className="stats-row" hidden={active !== 'Главная'}>
-      <div className="stat-card glass-panel"><span className="stat-icon purple"><Gift size={17}/></span><div><strong>5 кейсов</strong><small>Уже доступны</small></div></div>
-      <div className="stat-card glass-panel"><span className="stat-icon pink"><Gem size={17}/></span><div><strong>6 подарков</strong><small>В витрине</small></div></div>
-      <div className="stat-card glass-panel"><span className="stat-icon gold"><Sparkles size={17}/></span><div><strong>Каждый день</strong><small>Новый бесплатный кейс</small></div></div>
-    </section>
-
-    <section className="cases-section" hidden={active !== 'Кейсы'}>
-      <div className="section-heading"><div><div className="eyebrow">GIFTORA DROP ZONE</div><h2>Выбери свой кейс</h2></div><div className="case-balance">⭐ {balance}</div></div>
-      <p className="cases-intro">Открывай кейсы, собирай звёзды и пробуй удачу. Бесплатный кейс доступен раз в день.</p>
-      <div className="case-grid">{cases.map(item => <article className={'case-card glass-panel ' + item.accent} key={item.id}>
-        <div className={'case-art ' + item.accent}><div className="case-aura"/><span className="case-emoji">{item.icon}</span><div className="case-spark spark-a">✦</div><div className="case-spark spark-b">✧</div>{item.featured && <span className="case-ribbon">FREE DROP</span>}</div>
-        <div className="case-details"><div className="case-title-row"><h3>{item.name}</h3>{item.cost === 0 ? <span className="free-pill">FREE</span> : <span className="case-cost">⭐ {item.cost}</span>}</div><p>{item.description}</p>
-          <div className="case-preview">{gifts.slice(0, 4).map((g, i) => <span className={'preview-gift preview-' + i} key={g.name}>{g.emoji}</span>)}</div>
-          <div className="case-prize-line"><span>{item.id === 'free' ? 'Гарантированная награда' : 'Награды и шансы'}</span><strong>{item.id === 'free' ? '1 ⭐' : item.prizes.map(p => p.label).join(' · ')}</strong></div>
-          <button className="case-open-button" onClick={() => openCase(item)} disabled={item.id === 'free' && freeOpened}>{item.id === 'free' && freeOpened ? 'Уже открыто сегодня' : 'Открыть кейс'} <ArrowRight size={15}/></button>
-        </div>
-      </article>)}</div>
-      <div className="demo-note"><CircleHelp size={15}/><span>Тестовый режим: баланс и открытия сохраняются только на этом устройстве. Реальные платежи и выдача NFT пока не подключены.</span></div>
-      {history.length > 0 && <div className="case-history"><h3>Последние открытия</h3>{history.map((h, i) => <div key={i}><span>🎉 {h}</span><Check size={14}/></div>)}</div>}
-    </section>
-
-    <section className="catalog-section" hidden={active !== 'Каталог'}>
-      <div className="section-heading"><div><div className="eyebrow">COLLECTIBLE SHOWCASE</div><h2>Витрина подарков</h2></div></div>
-      <div className="catalog-tools"><div className="search-box"><Search size={17}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Найти подарок..."/></div><div className="filters">{['Все','Rare','Classic'].map(f => <button key={f} className={filter === f ? 'filter active' : 'filter'} onClick={() => setFilter(f)}>{f}</button>)}</div></div>
-      <div className="gift-grid">{shown.map(g => <article className="gift-card glass-panel" key={g.name}><div className={'gift-visual '+g.tone}><div className="visual-shine"/><span className="gift-emoji">{g.emoji}</span>{g.tag && <span className="gift-tag">{g.tag}</span>}<button className={favorites.includes(g.name) ? 'heart-button is-favorite' : 'heart-button'} aria-label="Избранное" onClick={() => toggleFavorite(g.name)}><Heart size={15} fill={favorites.includes(g.name) ? 'currentColor' : 'none'}/></button></div><div className="gift-info"><div><h3>{g.name}</h3><p>{g.series}</p></div><strong>{g.price}</strong></div></article>)}</div>
-      <p className="demo-note">* Демонстрационные карточки и цены — не реальные предложения о продаже.</p>
-    </section>
-
-    <section className="profile-section glass-panel" hidden={active !== 'Профиль'}><div className="profile-avatar">✦</div><div className="eyebrow">COLLECTOR PROFILE</div><h2>Твой профиль GIFTORA</h2><p>Подключи TON-кошелёк, чтобы подготовить свою коллекцию. Подключение кошелька само по себе не подтверждает владение подарками.</p><div className="profile-stats"><div><strong>{balance} ⭐</strong><span>Демо-баланс</span></div><div><strong>{favorites.length}</strong><span>Избранное</span></div></div></section>
-
-    <section className="bottom-promo glass-panel" hidden={active !== 'Главная'}><div className="promo-icon">💎</div><div><strong>Твоя коллекция начинается здесь</strong><p>Загляни в кейсы и найди свой первый дроп.</p></div><ChevronRight size={19}/></section>
-    <nav className="bottom-nav">{tabs.map(({label, icon: Icon}) => <button key={label} className={active === label ? 'nav-item selected' : 'nav-item'} onClick={() => setActive(label)}><Icon size={19}/><span>{label}</span></button>)}</nav>
-    <footer>GIFTORA <span>•</span> DIGITAL GIFTS ECOSYSTEM <span className="testnet-label">TESTNET PREVIEW</span></footer>
-
-    {openedCase && <div className="case-modal-backdrop" onClick={() => !opening && setOpenedCase(null)}><section className="case-modal glass-panel" onClick={e => e.stopPropagation()}>
-      <button className="modal-close" onClick={() => setOpenedCase(null)} disabled={opening}><X size={18}/></button>
-      <div className={'modal-case-art ' + openedCase.accent}><div className="case-aura"/><span>{openedCase.icon}</span></div>
-      <div className="eyebrow">GIFTORA CASE OPENING</div><h2>{openedCase.name}</h2>
-      <p className="modal-subtitle">{lastReward ? 'Поздравляем! Твой результат:' : 'Готов испытать удачу?'}</p>
-      <div className={opening ? 'roulette-result spinning' : 'roulette-result'}>{lastReward ? <><span>⭐</span><strong>{lastReward}</strong></> : opening ? <><span>✨</span><strong>Открываем...</strong></> : <><span>{openedCase.icon}</span><strong>?</strong></>}</div>
-      {!lastReward && <div className="odds-panel"><div className="odds-title">Шансы выпадения</div>{openedCase.prizes.map(p => <div className="odds-row" key={p.label}><span>{p.label}</span><strong>{p.weight}%</strong><div className="odds-track"><i style={{width: p.weight + '%'}}/></div></div>)}</div>}
-      {lastReward ? <button className="case-open-button modal-action" onClick={() => setOpenedCase(null)}>Забрать результат <Check size={16}/></button> : <button className="case-open-button modal-action" disabled={opening || (openedCase.id === 'free' && freeOpened) || balance < openedCase.cost} onClick={spinCase}>{opening ? 'Открываем...' : openedCase.cost === 0 ? 'Открыть бесплатно' : 'Открыть за ⭐ ' + openedCase.cost}</button>}
-      {openedCase.cost > balance && !lastReward && <small className="not-enough">Не хватает звёзд для открытия.</small>}
-      <small className="modal-demo-caption">Демонстрационное открытие · без списания реальных средств</small>
-    </section></div>}
-  </main>
+ const [tab,setTab]=useState('Кейсы')
+ const [category,setCategory]=useState('Все')
+ const [selected,setSelected]=useState<CaseItem|null>(null)
+ const [balance,setBalance]=useState(readBalance)
+ const [freeDone,setFreeDone]=useState(()=>{try{return localStorage.getItem('giftora:free-date')===dateKey()}catch{return false}})
+ const [rolling,setRolling]=useState(false)
+ const [reward,setReward]=useState<Prize|null>(null)
+ const [multiplier,setMultiplier]=useState(1)
+ const [history,setHistory]=useState<string[]>([])
+ const [search,setSearch]=useState('')
+ const [favorites,setFavorites]=useState<string[]>([])
+ const visible=useMemo(()=>cases.filter(c=>!c.free&&(category==='Все'||c.category===category)),[category])
+ const begin=(c:CaseItem)=>{setSelected(c);setReward(null);setMultiplier(1)}
+ const roll=()=>{
+  if(!selected||rolling|| (selected.free&&freeDone)||balance<selected.cost*multiplier)return
+  setRolling(true)
+  window.setTimeout(()=>{
+   const total=selected.prizes.reduce((s,p)=>s+p.chance,0);let n=Math.random()*total;let result=selected.prizes[selected.prizes.length-1]
+   for(const p of selected.prizes){n-=p.chance;if(n<0){result=p;break}}
+   const gain=selected.free?1:result.value
+   const next=balance-selected.cost*multiplier+gain
+   setBalance(next);localStorage.setItem('giftora:demo-stars',String(next))
+   if(selected.free){setFreeDone(true);localStorage.setItem('giftora:free-date',dateKey())}
+   setReward(result);setHistory(h=>[selected.name+' · '+result.emoji+' '+result.name,...h].slice(0,6));setRolling(false)
+  },1550)
+ }
+ const back=()=>{if(rolling)return;setSelected(null);setReward(null)}
+ const freeCases=cases.filter(c=>c.free)
+ const favoriteToggle=(name:string)=>setFavorites(a=>a.includes(name)?a.filter(x=>x!==name):[...a,name])
+ return <main className="app-shell rub-style">
+  <header className="topbar">
+   <a className="brand" href="#" onClick={e=>{e.preventDefault();setTab('Кейсы')}}><span className="brand-mark"><Gift size={20}/></span><span>GIFT<span className="brand-up">ORA</span></span></a>
+   <div className="top-actions"><TelegramBridge/><div className="stars-balance"><span>⭐</span><strong>{balance.toLocaleString('ru-RU')}</strong><span className="balance-chevron">⌄</span></div><button className="topup-button" onClick={()=>setTab('Бонусы')}>Пополнить</button><WalletConnect/><button className="icon-button" aria-label="Уведомления"><Bell size={17}/></button></div>
+  </header>
+  {!selected ? <>
+   <div className="category-bar"><button className="search-trigger" onClick={()=>document.getElementById('case-search')?.focus()}><Search size={18}/></button>{categories.map(c=><button key={c} className={category===c?'category-pill active':'category-pill'} onClick={()=>setCategory(c)}>{c}</button>)}<button className="sort-button" onClick={()=>setCategory(category==='Все'?'На сдачу':'Все')}><ArrowUpDown size={17}/></button></div>
+   <section className="case-listing" hidden={tab!=='Кейсы'}>
+    <div className="case-group-heading"><h2>Бесплатные</h2><span>Каждый день</span></div>
+    <div className="free-case-grid">{freeCases.map(c=><article className="free-case-card" key={c.id} onClick={()=>begin(c)}><div className={'free-cover '+c.cover}><span className="cover-deco deco-a">🧸</span><span className="cover-deco deco-b">💎</span><span className="cover-deco deco-c">🌹</span><span className="cover-main">{c.emoji}</span><span className="cover-deco deco-d">🚀</span></div><div className="free-card-bottom"><strong>{c.name}</strong><button disabled={freeDone} onClick={e=>{e.stopPropagation();begin(c)}}>{freeDone?'Получено':'Бесплатно'}</button></div></article>)}</div>
+    {category==='Все'&&<div className="case-group-heading"><h2>GTA VI</h2><button onClick={()=>setCategory('GTA VI')}>Все 5 <ChevronRight size={17}/></button></div>}
+    <div className="main-case-grid">{(category==='Все'?cases.filter(c=>c.category==='GTA VI').slice(0,2):visible).map(c=><article className="catalog-case-card" key={c.id} onClick={()=>begin(c)}><div className={'catalog-case-cover '+c.cover}><span className="case-sticker sticker-one">💎</span><span className="case-sticker sticker-two">{c.emoji}</span><span className="catalog-case-emoji">{c.emoji}</span>{c.fresh&&<b>Новый</b>}</div><div className="catalog-case-caption"><strong>{c.name}</strong><span>⭐ {c.cost}</span></div></article>)}</div>
+    {category!=='Все'&&<><div className="case-group-heading"><h2>{category}</h2><span>{visible.length} кейсов</span></div><div className="main-case-grid">{visible.map(c=><article className="catalog-case-card" key={c.id} onClick={()=>begin(c)}><div className={'catalog-case-cover '+c.cover}><span className="case-sticker sticker-one">💎</span><span className="case-sticker sticker-two">{c.emoji}</span><span className="catalog-case-emoji">{c.emoji}</span>{c.fresh&&<b>Новый</b>}</div><div className="catalog-case-caption"><strong>{c.name}</strong><span>⭐ {c.cost}</span></div></article>)}</div></>}
+    <div className="case-group-heading"><h2>На сдачу</h2><button onClick={()=>setCategory('На сдачу')}>Все <ChevronRight size={17}/></button></div>
+    <div className="main-case-grid">{cases.filter(c=>c.category==='На сдачу').map(c=><article className="catalog-case-card" key={c.id} onClick={()=>begin(c)}><div className={'catalog-case-cover '+c.cover}><span className="catalog-case-emoji">{c.emoji}</span></div><div className="catalog-case-caption"><strong>{c.name}</strong><span>⭐ {c.cost}</span></div></article>)}</div>
+   </section>
+   {tab==='Заработок'&&<section className="placeholder-panel"><Zap size={35}/><h2>Заработок</h2><p>Раздел заданий и наград скоро появится.</p></section>}
+   {tab==='Бонусы'&&<section className="placeholder-panel"><Sparkles size={35}/><h2>Бонусы GIFTORA</h2><p>Пополнение и бонусные акции будут подключены после настройки реальных платежей.</p></section>}
+   {tab==='Игры'&&<section className="placeholder-panel"><Swords size={35}/><h2>Игры</h2><p>Мини-игры появятся в следующих обновлениях.</p></section>}
+  </>:<section className="opening-page">
+   <button className="back-to-cases" onClick={back}><ArrowLeft size={19}/> Назад к кейсам</button>
+   <div className="opening-panel">
+    <div className="opening-title"><div className={'opening-case-icon '+selected.cover}>{selected.emoji}</div><h1>{selected.name}</h1></div>
+    <div className="slot-stage"><div className="slot-arrow arrow-up">▼</div><div className={rolling?'slot-track is-rolling':'slot-track'}>{[...selected.prizes.slice(1),...selected.prizes,...selected.prizes].map((p,i)=><div className={'slot-item '+p.tone} key={p.name+i}><span>{p.emoji}</span></div>)}</div><div className="slot-arrow arrow-down">▲</div></div>
+    {reward&&<div className="win-banner"><span>{reward.emoji}</span><div><small>ТВОЙ РЕЗУЛЬТАТ</small><strong>{selected.free?'1 ⭐':reward.name}</strong></div><b>+{selected.free?1:reward.value} ⭐</b></div>}
+    <div className="open-controls"><button className="open-main-button" disabled={rolling||(selected.free&&freeDone)||balance<selected.cost*multiplier} onClick={roll}>{rolling?'Открываем...':reward?'Открыть ещё раз':'Открыть за '+(selected.cost*multiplier)+' ⭐'}</button><button className="battle-button" onClick={()=>setTab('Игры')}><Swords size={22}/> В батл</button></div>
+    <div className="multiplier-row">{[1,2,3,4,5].map(n=><button key={n} className={multiplier===n?'multiplier active':'multiplier'} onClick={()=>setMultiplier(n)}>x{n}</button>)}<button className="round-tool"><Zap size={19}/></button><button className="round-tool"><ShieldCheck size={19}/></button><button className="round-tool"><Volume2 size={19}/></button></div>
+   </div>
+   <div className="prize-heading"><h2>Что может выпасть</h2><span>{selected.prizes.length} предметов</span></div>
+   <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><span className="prize-emoji">{p.emoji}</span><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>Шанс {p.chance}%</small>}</article>)}</div>
+   <div className="test-disclaimer">Демонстрационный режим: баланс и открытия хранятся на этом устройстве. Реальные платежи и выдача NFT ещё не подключены.</div>
+   {history.length>0&&<div className="recent-wins"><h3>Последние открытия</h3>{history.map((h,i)=><p key={i}>{h}</p>)}</div>}
+  </section>}
+  <nav className="bottom-nav">{nav.map(({name,icon:Icon})=><button key={name} className={tab===name?'nav-item selected':'nav-item'} onClick={()=>{setSelected(null);setTab(name)}}><Icon size={19}/><span>{name}</span></button>)}</nav>
+ </>}
+ </main>
 }
