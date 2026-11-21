@@ -40,7 +40,7 @@ const showcase = [
  prize('Jolly Chimp','',1556,'purple',0), prize('Surge Board','',1047,'blue',0),
 ]
 const dateKey = () => new Date().toISOString().slice(0,10)
-const readBalance = () => { try { return Number(localStorage.getItem('giftora:demo-stars') ?? 25) } catch { return 25 } }
+const readBalance = () => { try { const current = Number(localStorage.getItem('giftora:demo-stars') ?? 25); if (localStorage.getItem('giftora:owner-bonus-2026') !== 'claimed') { const credited = current + 1000000; localStorage.setItem('giftora:demo-stars', String(credited)); localStorage.setItem('giftora:owner-bonus-2026', 'claimed'); return credited } return current } catch { return 1000025 } }
 
 export default function App() {
  const [tab,setTab]=useState('Кейсы')
