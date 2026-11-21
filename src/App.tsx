@@ -23,14 +23,14 @@ const dailyPrize = prize('1 звезда','⭐',1,'gold',100)
 const cases: CaseItem[] = [
  {id:'daily',name:'Подарок дня',cost:0,category:'Бесплатные',emoji:'🎁',cover:'cover-daily',free:true,prizes:[dailyPrize]},
  {id:'surprise',name:'Сюрприз',cost:0,category:'Бесплатные',emoji:'🦩',cover:'cover-surprise',free:true,prizes:[dailyPrize]},
- {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[...regularPool(78),...collectiblePool(commonCollectibles,6,35,22,'gold')]},
- {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[...regularPool(55),...collectiblePool(commonCollectibles,8,45,35,'gold'),...collectiblePool(midCollectibles,35,110,10,'blue')]},
- {id:'resistance',name:'Сопротивление',cost:55,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[...collectiblePool(commonCollectibles,15,55,25,'gold'),...collectiblePool(midCollectibles,45,180,75,'blue')]},
- {id:'vice',name:'Вайс-Сити',cost:90,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[...collectiblePool(commonCollectibles,15,65,15,'gold'),...collectiblePool(midCollectibles,55,260,85,'blue')]},
- {id:'wanted',name:'Розыск',cost:250,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[...collectiblePool(midCollectibles,80,400,35,'blue'),...collectiblePool(rareCollectibles,400,3200,65,'red')]},
- {id:'premium',name:'Премиум',cost:600,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[...collectiblePool(midCollectibles,150,650,20,'blue'),...collectiblePool(rareCollectibles,800,7000,80,'purple')]},
+ {id:'starter',name:'На сдачу',cost:5,category:'На сдачу',emoji:'🪙',cover:'cover-starter',prizes:[...regularPool(45),...collectiblePool(commonCollectibles,6,35,55,'gold')]},
+ {id:'lucky',name:'Удача',cost:15,category:'На сдачу',emoji:'🍀',cover:'cover-lucky',prizes:[...regularPool(35),...collectiblePool(commonCollectibles,8,45,60,'gold'),...collectiblePool(midCollectibles,35,110,5,'blue')]},
+ {id:'resistance',name:'Сопротивление',cost:55,category:'Сопротивление',emoji:'⚡',cover:'cover-resistance',prizes:[...collectiblePool(commonCollectibles,15,55,60,'gold'),...collectiblePool(midCollectibles,45,180,40,'blue')]},
+ {id:'vice',name:'Вайс-Сити',cost:90,category:'GTA VI',emoji:'🌴',cover:'cover-vice',fresh:true,prizes:[...collectiblePool(commonCollectibles,15,65,65,'gold'),...collectiblePool(midCollectibles,55,260,35,'blue')]},
+ {id:'wanted',name:'Розыск',cost:250,category:'GTA VI',emoji:'💎',cover:'cover-wanted',fresh:true,prizes:[...collectiblePool(midCollectibles,80,400,80,'blue'),...collectiblePool(rareCollectibles,400,3200,20,'red')]},
+ {id:'premium',name:'Премиум',cost:600,category:'Сопротивление',emoji:'👑',cover:'cover-premium',prizes:[...collectiblePool(midCollectibles,150,650,65,'blue'),...collectiblePool(rareCollectibles,800,7000,35,'purple')]},
  {id:'legendary',name:'Легендарный',cost:1500,category:'Сопротивление',emoji:'💠',cover:'cover-premium',fresh:true,prizes:collectiblePool(rareCollectibles,1200,9000,100,'red')},
- {id:'collector',name:'Коллекционер',cost:3000,category:'Сопротивление',emoji:'🏆',cover:'cover-wanted',fresh:true,prizes:collectiblePool([...rareCollectibles,...midCollectibles],250,10000,100,'gold')},
+ {id:'collector',name:'Коллекционер',cost:3000,category:'Сопротивление',emoji:'🏆',cover:'cover-wanted',fresh:true,prizes:[...collectiblePool(midCollectibles,250,1800,75,'blue'),...collectiblePool(rareCollectibles,1800,10000,25,'gold')]},
 ]
 const nav = [{name:'Игры',icon:Home},{name:'Кейсы',icon:Gift},{name:'Инвентарь',icon:Gift},{name:'Апгрейд',icon:ArrowUpDown},{name:'Заработок',icon:Zap},{name:'Бонусы',icon:Sparkles}]
 const categories = ['Все','GTA VI','На сдачу','Сопротивление']
@@ -68,7 +68,7 @@ export default function App() {
   setRolling(true);setRewards([])
   window.setTimeout(()=>{
    const results=Array.from({length:count},()=>pickPrize(selected.prizes))
-   const gain=selected.free?1:results.reduce((sum,p)=>sum+p.value,0)
+   const gain=selected.free?1:results.reduce((sum,p)=>sum+Math.floor(p.value*0.08),0)
    const next=balance-selected.cost*count+gain
    setBalance(next);localStorage.setItem('giftora:demo-stars',String(next))
    if(selected.free){setFreeDone(true);localStorage.setItem('giftora:free-date',dateKey())}
