@@ -15,3 +15,15 @@
 .wallet-network.testnet{color:#9ee5c0}
 .wallet-network.warning{color:#ffd28a}
 @media(max-width:700px){.wallet-connect button{min-height:40px!important}.wallet-connect .wallet-network{display:none}.telegram-status{display:none}}
+
+.heart-button.is-favorite{color:#ff9bce;border-color:#ff9bce88;background:#9d3c752b}
+.profile-section{position:relative;z-index:1;border-radius:22px;padding:34px 28px;text-align:center;margin:30px auto;max-width:650px}
+.profile-avatar{width:74px;height:74px;border-radius:24px;margin:0 auto 18px;display:grid;place-items:center;font-size:32px;color:#eadbff;background:linear-gradient(145deg,#b68aff55,#7846d555);border:1px solid #ffffff35;box-shadow:0 10px 35px #9c65e633}
+.profile-section h2{font-size:25px;letter-spacing:-1px;margin:10px 0}
+.profile-section>p{max-width:440px;margin:0 auto;color:#a99dbb;font-size:11px;line-height:1.8}
+.profile-stats{display:flex;justify-content:center;gap:12px;margin-top:25px}
+.profile-stats>div{min-width:130px;padding:14px 18px;border-radius:13px;background:#ffffff08;border:1px solid #ffffff13}
+.profile-stats strong,.profile-stats span{display:block}
+.profile-stats strong{font-size:20px}
+.profile-stats span{font-size:9px;color:#a99dbb;margin-top:4px}
+@media(max-width:700px){.profile-section{padding:28px 18px}.profile-section h2{font-size:22px}.profile-stats>div{min-width:112px;padding:12px}}
