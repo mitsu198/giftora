@@ -38,7 +38,6 @@ export default function App() {
  const [reward,setReward]=useState<Prize|null>(null)
  const [multiplier,setMultiplier]=useState(1)
  const [history,setHistory]=useState<string[]>([])
- const [search,setSearch]=useState('')
  const [favorites,setFavorites]=useState<string[]>([])
  const visible=useMemo(()=>cases.filter(c=>!c.free&&(category==='Все'||c.category===category)),[category])
  const begin=(c:CaseItem)=>{setSelected(c);setReward(null);setMultiplier(1)}
@@ -86,7 +85,7 @@ export default function App() {
     <div className="open-controls"><button className="open-main-button" disabled={rolling||(selected.free&&freeDone)||balance<selected.cost*multiplier} onClick={roll}>{rolling?'Открываем...':reward?'Открыть ещё раз':'Открыть за '+(selected.cost*multiplier)+' ⭐'}</button><button className="battle-button" onClick={()=>setTab('Игры')}><Swords size={22}/> В батл</button></div>
     <div className="multiplier-row">{[1,2,3,4,5].map(n=><button key={n} className={multiplier===n?'multiplier active':'multiplier'} onClick={()=>setMultiplier(n)}>x{n}</button>)}<button className="round-tool"><Zap size={19}/></button><button className="round-tool"><ShieldCheck size={19}/></button><button className="round-tool"><Volume2 size={19}/></button></div>
    </div>
-   <div className="prize-heading"><h2>Что может выпасть</h2><span>{selected.prizes.length} предметов</span></div>
+   <div className="prize-heading"><h2>{selected.free ? "Витрина подарков" : "Что может выпасть"}</h2><span>{selected.free ? "Коллекция" : selected.prizes.length+" предметов"}</span></div>
    <div className="prize-grid">{(selected.free?showcase:selected.prizes).map((p,i)=><article className={'prize-card '+p.tone} key={p.name+i}><button className={favorites.includes(p.name)?'prize-heart saved':'prize-heart'} onClick={()=>favoriteToggle(p.name)}><Heart size={15} fill={favorites.includes(p.name)?'currentColor':'none'}/></button><span className="prize-emoji">{p.emoji}</span><strong>{p.name}</strong><b>{p.value.toLocaleString('ru-RU')} ⭐</b>{!selected.free&&<small>Шанс {p.chance}%</small>}</article>)}</div>
    <div className="test-disclaimer">Демонстрационный режим: баланс и открытия хранятся на этом устройстве. Реальные платежи и выдача NFT ещё не подключены.</div>
    {history.length>0&&<div className="recent-wins"><h3>Последние открытия</h3>{history.map((h,i)=><p key={i}>{h}</p>)}</div>}
